@@ -5,10 +5,7 @@ export class RegisterUseCases {
   constructor(private readonly userRepository: DatabaseUserRepository) {}
 
   async execute(user: Pick<Users, 'email' | 'name' | 'password'>): Promise<Users> {
-    console.log(this.userRepository)
-    const auth = await this.userRepository.create({
-      data: user,
-    })
-    return auth
+    const registered = await this.userRepository.register(user)
+    return registered
   }
 }

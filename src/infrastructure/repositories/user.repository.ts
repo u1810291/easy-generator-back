@@ -1,13 +1,19 @@
+import { Users } from '@prisma/client'
 import { Injectable } from '@nestjs/common'
 import { PrismaRepository } from './prisma.repository'
 import { PrismaService } from '../config/prisma/prisma.service'
-import { Users } from '@prisma/client'
+import { BcryptService } from '../services/bcrypt/bcrypt.service'
+import { ExceptionsService } from '../exceptions/exceptions.service'
 // import { UserRepositoryI } from '../../domain/repositories/userRepository.interface'
 // import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class DatabaseUserRepository extends PrismaRepository<'users'> {
-  constructor(protected readonly prisma: PrismaService) {
+  constructor(
+    protected readonly prisma: PrismaService,
+    private readonly exceptionService: ExceptionsService,
+    private readonly encrypt: BcryptService,
+  ) {
     super(prisma, 'users')
   }
   async updateRefreshToken(email: string, refreshToken: string): Promise<void> {
@@ -16,7 +22,6 @@ export class DatabaseUserRepository extends PrismaRepository<'users'> {
         email: email,
       },
       data: {
-        name: 'Another name',
         hashRefreshToken: refreshToken,
       },
     })
@@ -33,15 +38,29 @@ export class DatabaseUserRepository extends PrismaRepository<'users'> {
     return adminUserEntity
   }
 
-  async register(user: Users): Promise<void> {
-    const userRegister = await this.create({
-      data: {
+  async register(user: Pick<Users, 'email' | 'name' | 'password'>): Promise<Users> {
+    const userExists = await this.findFirst({
+      where: {
         email: user.email,
-        name: user.name,
-        password: user.password,
       },
     })
-    console.log('Registered = ', userRegister)
+
+    if (userExists) {
+      this.exceptionService.badRequestException({
+        code_error: 400,
+        message: 'User with this email is already exists',
+      })
+    }
+
+    const password = await this.encrypt.hash(user.password)
+
+    const userRegister = await this.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        password: password,
+      },
+    })
     return userRegister
   }
 }

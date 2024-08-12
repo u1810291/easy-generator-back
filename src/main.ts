@@ -16,6 +16,8 @@ async function bootstrap() {
 
   app.use(cookieParser())
 
+  app.enableCors()
+
   // Filter
   app.useGlobalFilters(new AllExceptionFilter(new LoggerService()))
 

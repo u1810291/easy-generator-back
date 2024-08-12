@@ -19,7 +19,6 @@ export class PrismaRepository<K extends Exclude<keyof PrismaClient, symbol | `$$
   }
 
   create(...args: Parameters<PrismaClient[K]['create']>) {
-    console.log(args, this.model)
     return (this.prisma[this.model].create as any)(...args)
   }
 
