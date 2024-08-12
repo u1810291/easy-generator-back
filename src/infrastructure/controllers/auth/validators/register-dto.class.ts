@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, IsString, Validate } from 'class-validator'
+import { PasswordValidator } from './custom/custom-register-dto.class'
 
 export class RegisterDto {
   @ApiProperty({ required: true })
@@ -15,5 +16,6 @@ export class RegisterDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   @IsString()
+  @Validate(PasswordValidator)
   readonly password: string
 }
