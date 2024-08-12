@@ -10,20 +10,20 @@ export class DatabaseUserRepository extends PrismaRepository<'users'> {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma, 'users')
   }
-  async updateRefreshToken(username: string, refreshToken: string): Promise<void> {
+  async updateRefreshToken(email: string, refreshToken: string): Promise<void> {
     await this.update({
       where: {
-        username: username,
+        email: email,
       },
       data: {
         hashRefreshToken: refreshToken,
       },
     })
   }
-  async getUserByUsername(username: string): Promise<Users | null> {
+  async getUserByUsername(email: string): Promise<Users | null> {
     const adminUserEntity = await this.findFirst({
       where: {
-        username: username,
+        email: email,
       },
     })
     if (!adminUserEntity) {
@@ -31,17 +31,16 @@ export class DatabaseUserRepository extends PrismaRepository<'users'> {
     }
     return adminUserEntity
   }
-  async updateLastLogin(username: string): Promise<void> {
-    await this.update({
-      where: {
-        username: username,
-      },
+
+  async register(user: Users): Promise<void> {
+    const userRegister = await this.create({
       data: {
-        lastLogin: new Date().toISOString(),
+        email: user.email,
+        name: user.name,
+        password: user.password,
       },
     })
-  }
-  async register(): Promise<void> {
-    console.log('Hello register')
+    console.log('Registered = ', userRegister)
+    return userRegister
   }
 }

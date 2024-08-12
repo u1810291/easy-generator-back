@@ -8,8 +8,8 @@ export class GetUserByUsername {
     private readonly userRepository: UserRepositoryI,
   ) {}
 
-  async execute(username: string): Promise<Users> {
-    const result = await this.userRepository.getUserByUsername(username)
+  async execute(email: string): Promise<Users> {
+    const result = await this.userRepository.getUserByUsername(email)
     this.logger.log('GetUserByUsernameUseCases execute', 'New todo have been inserted')
     return result
   }

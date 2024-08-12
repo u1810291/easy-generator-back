@@ -9,27 +9,17 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-enum UserStatus {
-  ACTIVE
-  INACTIVE
-}
-
 model Users {
-  id               String     @id @default(uuid()) @db.Uuid
-  username         String     @unique @db.VarChar(20)
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
   password         String
-  email            String     @unique @db.VarChar(150)
-  firstName        String     @map("first_name") @db.VarChar(150)
-  lastName         String?    @map("last_name") @db.VarChar(150)
-  phone            String?    @unique @db.VarChar(20)
-  status           UserStatus
+  email            String     @unique
+  name             String     @map("name")
   createdAt        DateTime   @default(now()) @map("created_at")
-  updatedAt        DateTime   @default(now()) @updatedAt @map("updated_at")
-  lastLogin        DateTime   @default(now()) @updatedAt @map("last_login")
+  updatedAt        DateTime   @default(now()) @map("updated_at")
   hashRefreshToken String?    @map("hash_refresh_token")
 
   @@map("users")

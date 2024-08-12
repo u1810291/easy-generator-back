@@ -65,9 +65,9 @@ export class AuthController {
   @ApiOperation({ description: 'is_authenticated' })
   @ApiResponseType(IsAuthPresenter, false)
   async isAuthenticated(@Req() request: any) {
-    const user = await this.isAuthUseCaseProxy.getInstance().execute(request.user.username)
+    const user = await this.isAuthUseCaseProxy.getInstance().execute(request.user?.email)
     const response = new IsAuthPresenter()
-    response.username = user.username
+    response.username = user.email
     return response
   }
 
@@ -75,19 +75,21 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @ApiBearerAuth()
   async refresh(@Req() request: any) {
-    const accessTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtToken(request.user.username)
+    const accessTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtToken(request.user?.email)
     request.res.setHeader('Set-Cookie', accessTokenCookie)
     return 'Refresh successful'
   }
 
   @Post('register')
-  @UseGuards(LoginGuard)
   @ApiBearerAuth()
   @ApiBody({ type: AuthLoginDto })
   @ApiOperation({ description: 'register' })
-  async register(@Req() request: RegisterDto) {
-    const user = await this.registerUseCaseProxy.getInstance().execute()
-    console.log(user, request)
-    return 'Registered'
+  async register(@Body() user: RegisterDto, @Req() request: any) {
+    const auth = await this.registerUseCaseProxy.getInstance().execute(user)
+    const accessTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtToken(auth.email)
+    const refreshTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtRefreshToken(auth.email)
+    request.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie])
+
+    return 'Successfully registered'
   }
 }

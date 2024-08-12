@@ -1,7 +1,14 @@
-export class RegisterUseCases {
-  constructor() {}
+import { Users } from '@prisma/client'
+import { DatabaseUserRepository } from 'src/infrastructure/repositories/user.repository'
 
-  async execute(): Promise<string[]> {
-    return ['Authentication=; HttpOnly; Path=/; Max-Age=0', 'Refresh=; HttpOnly; Path=/; Max-Age=0']
+export class RegisterUseCases {
+  constructor(private readonly userRepository: DatabaseUserRepository) {}
+
+  async execute(user: Pick<Users, 'email' | 'name' | 'password'>): Promise<Users> {
+    console.log(this.userRepository)
+    const auth = await this.userRepository.create({
+      data: user,
+    })
+    return auth
   }
 }

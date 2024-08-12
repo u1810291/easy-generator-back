@@ -13,34 +13,34 @@ export class LoginUseCases {
     private readonly bcryptService: IBcryptService,
   ) {}
 
-  async getCookieWithJwtToken(username: string) {
-    this.logger.log('LoginUseCases execute', `The user ${username} have been logged.`)
-    const payload: IJwtServicePayload = { username: username }
+  async getCookieWithJwtToken(email: string) {
+    this.logger.log('LoginUseCases execute', `The user email ${email} have been logged.`)
+    const payload: IJwtServicePayload = { email: email }
     const secret = this.jwtConfig.getJwtSecret()
     const expiresIn = this.jwtConfig.getJwtExpirationTime() + 's'
     const token = this.jwtTokenService.createToken(payload, secret, expiresIn)
     return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.jwtConfig.getJwtExpirationTime()}`
   }
 
-  async getCookieWithJwtRefreshToken(username: string) {
-    this.logger.log('LoginUseCases execute', `The user ${username} have been logged.`)
-    const payload: IJwtServicePayload = { username: username }
+  async getCookieWithJwtRefreshToken(email: string) {
+    this.logger.log('LoginUseCases execute', `The user ${email} have been logged.`)
+    const payload: IJwtServicePayload = { email: email }
     const secret = this.jwtConfig.getJwtRefreshSecret()
     const expiresIn = this.jwtConfig.getJwtRefreshExpirationTime() + 's'
     const token = this.jwtTokenService.createToken(payload, secret, expiresIn)
-    await this.setCurrentRefreshToken(token, username)
+    await this.setCurrentRefreshToken(token, email)
     const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.jwtConfig.getJwtRefreshExpirationTime()}`
     return cookie
   }
 
-  async validateUserForLocalStrategy(username: string, pass: string) {
-    const user = await this.userRepository.getUserByUsername(username)
+  async validateUserForLocalStrategy(email: string, pass: string) {
+    const user = await this.userRepository.getUserByUsername(email)
     if (!user) {
       return null
     }
     const match = await this.bcryptService.compare(pass, user.password)
     if (user && match) {
-      await this.updateLoginTime(user.username)
+      await this.updateLoginTime(user.email)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user
       return result
@@ -48,21 +48,21 @@ export class LoginUseCases {
     return null
   }
 
-  async validateUserForJWTStrategy(username: string) {
-    const user = await this.userRepository.getUserByUsername(username)
+  async validateUserForJWTStrategy(email: string) {
+    const user = await this.userRepository.getUserByUsername(email)
     if (!user) {
       return null
     }
     return user
   }
 
-  async updateLoginTime(username: string) {
-    await this.userRepository.updateLastLogin(username)
+  async updateLoginTime(email: string) {
+    await this.userRepository.updateLastLogin(email)
   }
 
-  async setCurrentRefreshToken(refreshToken: string, username: string) {
+  async setCurrentRefreshToken(refreshToken: string, email: string) {
     const currentHashedRefreshToken = await this.bcryptService.hash(refreshToken)
-    await this.userRepository.updateRefreshToken(username, currentHashedRefreshToken)
+    await this.userRepository.updateRefreshToken(email, currentHashedRefreshToken)
   }
 
   async getUserIfRefreshTokenMatches(refreshToken: string, username: string) {

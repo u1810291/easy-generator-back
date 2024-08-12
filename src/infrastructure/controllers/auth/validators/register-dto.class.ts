@@ -5,7 +5,12 @@ export class RegisterDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   @IsString()
-  readonly username: string
+  readonly name: string
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  @IsString()
+  readonly email: string
 
   @ApiProperty({ required: true })
   @IsNotEmpty()

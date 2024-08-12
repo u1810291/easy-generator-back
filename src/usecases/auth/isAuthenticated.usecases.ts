@@ -4,8 +4,8 @@ import { UserRepositoryI } from '../../domain/repositories/userRepository.interf
 export class IsAuthenticatedUseCases {
   constructor(private readonly adminUserRepo: UserRepositoryI) {}
 
-  async execute(username: string): Promise<Omit<Users, 'password'>> {
-    const user: Users = await this.adminUserRepo.getUserByUsername(username)
+  async execute(email: string): Promise<Omit<Users, 'password'>> {
+    const user: Users = await this.adminUserRepo.getUserByUsername(email)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...info } = user
     return info
