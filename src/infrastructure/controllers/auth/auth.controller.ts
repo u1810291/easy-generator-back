@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Inject, Post, Req, Request, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Req,
+  Request,
+  // UseGuards
+} from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { IsAuthPresenter } from './auth.presenter'
@@ -6,8 +15,8 @@ import { AuthLoginDto } from './validators/auth-dto.class'
 import { RegisterDto } from './validators/register-dto.class'
 
 // import { LoginGuard } from '../../common/guards/login.guard'
-import { JwtAuthGuard } from '../../common/guards/jwtAuth.guard'
-import JwtRefreshGuard from '../../common/guards/jwtRefresh.guard'
+// import { JwtAuthGuard } from '../../common/guards/jwtAuth.guard'
+// import JwtRefreshGuard from '../../common/guards/jwtRefresh.guard'
 
 import { UseCaseProxy } from '../../usecases-proxy/usecases-proxy'
 import { LoginUseCases } from '../../../usecases/auth/login.usecases'
@@ -15,8 +24,8 @@ import { LogoutUseCases } from '../../../usecases/auth/logout.usecases'
 import { RegisterUseCases } from '../../../usecases/auth/register.usecases'
 import { IsAuthenticatedUseCases } from '../../../usecases/auth/isAuthenticated.usecases'
 
-import { ApiResponseType } from '../../common/swagger/response.decorator'
 import { Symbols } from '../../../domain/symbols'
+import { ApiResponseType } from '../../common/swagger/response.decorator'
 
 @Controller('auth')
 @ApiTags('auth')
@@ -51,7 +60,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'logout' })
   async logout(@Request() request: any) {
     const cookie = await this.logoutUseCaseProxy.getInstance().execute()
@@ -61,7 +70,7 @@ export class AuthController {
 
   @Get('is_authenticated')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'is_authenticated' })
   @ApiResponseType(IsAuthPresenter, false)
   async isAuthenticated(@Req() request: any) {
@@ -72,7 +81,7 @@ export class AuthController {
   }
 
   @Get('refresh')
-  @UseGuards(JwtRefreshGuard)
+  // @UseGuards(JwtRefreshGuard)
   @ApiBearerAuth()
   async refresh(@Req() request: any) {
     const accessTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtToken(request.user?.email)
@@ -89,7 +98,6 @@ export class AuthController {
     const accessTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtToken(auth.email)
     const refreshTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtRefreshToken(auth.email)
     request.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie])
-
     return 'Successfully registered'
   }
 }

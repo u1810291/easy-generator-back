@@ -16,6 +16,7 @@ export class DatabaseUserRepository extends PrismaRepository<'users'> {
         email: email,
       },
       data: {
+        name: 'Another name',
         hashRefreshToken: refreshToken,
       },
     })
