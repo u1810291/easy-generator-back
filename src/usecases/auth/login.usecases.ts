@@ -34,7 +34,7 @@ export class LoginUseCases {
   }
 
   async validateUserForLocalStrategy(email: string, pass: string) {
-    const user = await this.userRepository.getUserByUsername(email)
+    const user = await this.userRepository.getUserByEmail(email)
     if (!user) {
       return null
     }
@@ -49,7 +49,7 @@ export class LoginUseCases {
   }
 
   async validateUserForJWTStrategy(email: string) {
-    const user = await this.userRepository.getUserByUsername(email)
+    const user = await this.userRepository.getUserByEmail(email)
     if (!user) {
       return null
     }
@@ -65,8 +65,8 @@ export class LoginUseCases {
     await this.userRepository.updateRefreshToken(email, currentHashedRefreshToken)
   }
 
-  async getUserIfRefreshTokenMatches(refreshToken: string, username: string) {
-    const user = await this.userRepository.getUserByUsername(username)
+  async getUserIfRefreshTokenMatches(refreshToken: string, email: string) {
+    const user = await this.userRepository.getUserByEmail(email)
     if (!user) {
       return null
     }

@@ -20,7 +20,7 @@ export class DatabaseUserRepository extends PrismaRepository<'users'> {
       },
     })
   }
-  async getUserByUsername(email: string): Promise<Users | null> {
+  async getUserByEmail(email: string): Promise<Users | null> {
     const adminUserEntity = await this.findFirst({
       where: {
         email: email,

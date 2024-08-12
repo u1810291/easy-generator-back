@@ -3,5 +3,5 @@ export const Symbols = {
   LOGOUT_USECASES_PROXY: Symbol.for('LogoutUseCasesProxy'),
   REGISTER_USECASES_PROXY: Symbol.for('RegisterUseCasesProxy'),
   IS_AUTHENTICATED_USECASES_PROXY: Symbol.for('IsAuthenticatedUseCasesProxy'),
-  GET_USER_BY_USERNAME_USECASES_PROXY: Symbol.for('GetUserByUsernameUseCasesProxy'),
+  GET_USER_BY_EMAIL_USECASES_PROXY: Symbol.for('GetUserByEmailUseCasesProxy'),
 }

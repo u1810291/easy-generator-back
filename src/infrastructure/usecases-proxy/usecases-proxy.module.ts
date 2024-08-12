@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common'
-import { GetUserByUsername } from '../../usecases/user/GetUserByUsername.usecase'
+import { GetUserByEmail } from '../../usecases/user/GetUserByEmail.usecase'
 
 import { ExceptionsModule } from '../exceptions/exceptions.module'
 import { LoggerModule } from '../logger/logger.module'
@@ -59,9 +59,9 @@ export class UseCasesProxyModule {
         },
         {
           inject: [LoggerService, DatabaseUserRepository],
-          provide: Symbols.GET_USER_BY_USERNAME_USECASES_PROXY,
+          provide: Symbols.GET_USER_BY_EMAIL_USECASES_PROXY,
           useFactory: (logger: LoggerService, userRepository: UserRepositoryI) =>
-            new UseCaseProxy(new GetUserByUsername(logger, userRepository)),
+            new UseCaseProxy(new GetUserByEmail(logger, userRepository)),
         },
       ],
       exports: [

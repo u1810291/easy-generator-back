@@ -5,7 +5,7 @@ export class AuthLoginDto {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   @IsString()
-  readonly username: string
+  readonly email: string
 
   @ApiProperty({ required: true })
   @IsNotEmpty()

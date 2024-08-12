@@ -5,7 +5,7 @@ import { IsAuthPresenter } from './auth.presenter'
 import { AuthLoginDto } from './validators/auth-dto.class'
 import { RegisterDto } from './validators/register-dto.class'
 
-import { LoginGuard } from '../../common/guards/login.guard'
+// import { LoginGuard } from '../../common/guards/login.guard'
 import { JwtAuthGuard } from '../../common/guards/jwtAuth.guard'
 import JwtRefreshGuard from '../../common/guards/jwtRefresh.guard'
 
@@ -39,13 +39,13 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  @UseGuards(LoginGuard)
+  // @UseGuards(LoginGuard)
   @ApiBearerAuth()
   @ApiBody({ type: AuthLoginDto })
   @ApiOperation({ description: 'login' })
   async login(@Body() auth: AuthLoginDto, @Request() request: any) {
-    const accessTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtToken(auth.username)
-    const refreshTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtRefreshToken(auth.username)
+    const accessTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtToken(auth.email)
+    const refreshTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtRefreshToken(auth.email)
     request.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie])
     return 'Login successful'
   }
@@ -67,7 +67,7 @@ export class AuthController {
   async isAuthenticated(@Req() request: any) {
     const user = await this.isAuthUseCaseProxy.getInstance().execute(request.user?.email)
     const response = new IsAuthPresenter()
-    response.username = user.email
+    response.email = user.email
     return response
   }
 
