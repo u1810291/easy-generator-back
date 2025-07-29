@@ -1,7 +1,7 @@
 import { AppModule } from './app.module'
 import { NestFactory } from '@nestjs/core'
 import * as cookieParser from 'cookie-parser'
-import { ValidationPipe } from '@nestjs/common'
+import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { LoggerService } from './infrastructure/logger/logger.service'
 import { prismaInit } from './infrastructure/config/prisma/prisma.config'
@@ -29,7 +29,11 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor())
 
   // base routing
-  app.setGlobalPrefix('api_v1')
+  app.setGlobalPrefix('api')
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+  })
 
   // swagger config
   if (env !== 'production') {

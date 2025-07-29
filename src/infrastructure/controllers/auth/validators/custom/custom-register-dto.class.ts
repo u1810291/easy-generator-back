@@ -4,10 +4,10 @@ import { ValidatorConstraint, ValidatorConstraintInterface } from 'class-validat
 @ValidatorConstraint({ name: 'UserExists', async: true })
 @Injectable()
 export class PasswordValidator implements ValidatorConstraintInterface {
-  constructor() {}
+  constructor() { }
 
   async validate(value: string) {
-    if (value.match(/^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/)) {
+    if (value?.match(/^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/)) {
       return true
     }
     return false

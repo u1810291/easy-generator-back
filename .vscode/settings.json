@@ -1,3 +1,6 @@
 {
-  "prettier.embeddedLanguageFormatting": "off"
+  "prettier.embeddedLanguageFormatting": "off",
+  "cSpell.words": [
+    "USECASES"
+  ]
 }

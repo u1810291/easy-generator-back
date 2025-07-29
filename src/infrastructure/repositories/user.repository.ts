@@ -4,11 +4,11 @@ import { PrismaRepository } from './prisma.repository'
 import { PrismaService } from '../config/prisma/prisma.service'
 import { BcryptService } from '../services/bcrypt/bcrypt.service'
 import { ExceptionsService } from '../exceptions/exceptions.service'
-// import { UserRepositoryI } from '../../domain/repositories/userRepository.interface'
+import { UserRepositoryI } from '../../domain/repositories/userRepository.interface'
 // import { ConfigService } from '@nestjs/config'
 
 @Injectable()
-export class DatabaseUserRepository extends PrismaRepository<'users'> {
+export class DatabaseUserRepository extends PrismaRepository<'users'> implements UserRepositoryI {
   constructor(
     protected readonly prisma: PrismaService,
     private readonly exceptionService: ExceptionsService,
@@ -16,6 +16,11 @@ export class DatabaseUserRepository extends PrismaRepository<'users'> {
   ) {
     super(prisma, 'users')
   }
+
+  async updateLastLogin(email: string): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
   async updateRefreshToken(email: string, refreshToken: string): Promise<void> {
     await this.update({
       where: {
@@ -26,6 +31,7 @@ export class DatabaseUserRepository extends PrismaRepository<'users'> {
       },
     })
   }
+
   async getUserByEmail(email: string): Promise<Users | null> {
     const adminUserEntity = await this.findFirst({
       where: {

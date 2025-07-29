@@ -6,7 +6,7 @@ import {
   Post,
   Req,
   Request,
-  // UseGuards
+  UseGuards,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 
@@ -15,8 +15,8 @@ import { AuthLoginDto } from './validators/auth-dto.class'
 import { RegisterDto } from './validators/register-dto.class'
 
 // import { LoginGuard } from '../../common/guards/login.guard'
-// import { JwtAuthGuard } from '../../common/guards/jwtAuth.guard'
-// import JwtRefreshGuard from '../../common/guards/jwtRefresh.guard'
+import { JwtAuthGuard } from '../../common/guards/jwtAuth.guard'
+import JwtRefreshGuard from '../../common/guards/jwtRefresh.guard'
 
 import { UseCaseProxy } from '../../usecases-proxy/usecases-proxy'
 import { LoginUseCases } from '../../../usecases/auth/login.usecases'
@@ -27,7 +27,10 @@ import { IsAuthenticatedUseCases } from '../../../usecases/auth/isAuthenticated.
 import { Symbols } from '../../../domain/symbols'
 import { ApiResponseType } from '../../common/swagger/response.decorator'
 
-@Controller('auth')
+@Controller({
+  version: "1",
+  path: 'auth'
+})
 @ApiTags('auth')
 @ApiResponse({
   status: 401,
@@ -45,14 +48,14 @@ export class AuthController {
     private readonly isAuthUseCaseProxy: UseCaseProxy<IsAuthenticatedUseCases>,
     @Inject(Symbols.REGISTER_USECASES_PROXY)
     private readonly registerUseCaseProxy: UseCaseProxy<RegisterUseCases>,
-  ) {}
+  ) { }
 
   @Post('login')
-  // @UseGuards(LoginGuard)
   @ApiBearerAuth()
   @ApiBody({ type: AuthLoginDto })
   @ApiOperation({ description: 'login' })
   async login(@Body() auth: AuthLoginDto, @Request() request: any) {
+    console.error("AUTH = ", auth)
     const accessTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtToken(auth.email)
     const refreshTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtRefreshToken(auth.email)
     request.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie])
@@ -60,7 +63,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'logout' })
   async logout(@Request() request: any) {
     const cookie = await this.logoutUseCaseProxy.getInstance().execute()
@@ -70,7 +73,7 @@ export class AuthController {
 
   @Get('is_authenticated')
   @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'is_authenticated' })
   @ApiResponseType(IsAuthPresenter, false)
   async isAuthenticated(@Req() request: any) {
@@ -81,7 +84,7 @@ export class AuthController {
   }
 
   @Get('refresh')
-  // @UseGuards(JwtRefreshGuard)
+  @UseGuards(JwtRefreshGuard)
   @ApiBearerAuth()
   async refresh(@Req() request: any) {
     const accessTokenCookie = await this.loginUseCaseProxy.getInstance().getCookieWithJwtToken(request.user?.email)
